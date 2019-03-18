@@ -16,6 +16,7 @@ namespace BillionSongs {
     using Microsoft.Extensions.DependencyInjection;
     using Gradient.Samples.GPT2;
     using Python.Runtime;
+    using tensorflow;
 
     public class Startup {
         public Startup(IConfiguration configuration) {
@@ -26,6 +27,8 @@ namespace BillionSongs {
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
+            tf.set_random_seed(5670026);
+
             string checkpoint = this.Configuration.GetValue("MODEL_CHECKPOINT", "latest");
             string modelName = this.Configuration.GetValue<string>("GPT2_MODEL", null);
             string runName = this.Configuration.GetValue<string>("MODEL_RUN", null);
