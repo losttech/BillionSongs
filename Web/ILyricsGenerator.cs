@@ -2,6 +2,6 @@
     using System.Threading.Tasks;
 
     public interface ILyricsGenerator {
-        Task<string> GenerateLyrics(int song);
+        Task<string> GenerateLyrics(uint song);
     }
 }

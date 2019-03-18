@@ -12,8 +12,8 @@
 
         public string Lyrics { get; private set; }
 
-        public async Task OnGetAsync(int id) {
-            this.Lyrics = await this.lyricsGenerator.GenerateLyrics(id);
+        public async Task OnGetAsync(uint id) {
+            this.Lyrics = await this.lyricsGenerator.GenerateLyrics(id).ConfigureAwait(false);
         }
 
         public SongModel([NotNull] ILyricsGenerator lyricsGenerator) {

@@ -1,0 +1,3 @@
+[submodule "External/Gradient-Samples"]
+	path = External/Gradient-Samples
+	url = https://github.com/losttech/Gradient-Samples.git
