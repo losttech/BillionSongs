@@ -1,6 +1,7 @@
 ﻿namespace BillionSongs {
     using System;
     using System.Linq;
+    using System.Text;
     using Gradient.Samples.GPT2;
     using JetBrains.Annotations;
     using numpy;
@@ -11,11 +12,14 @@
 
     public class GradientTextGenerator {
         const int BatchSize = 1;
+        const int MaxSampleLength = 1024;
         readonly Gpt2Encoder encoder;
         readonly ndarray endOfText;
         readonly string modelName;
         readonly int sampleLength;
         readonly string checkpoint;
+
+        public string EndOfText => Gpt2Encoder.EndOfTextPseudoToken;
 
         public GradientTextGenerator([NotNull] string modelName, [NotNull] string checkpoint, int sampleLength) {
             if (string.IsNullOrEmpty(modelName)) throw new ArgumentNullException(nameof(modelName));
@@ -26,13 +30,12 @@
             this.sampleLength = sampleLength;
             this.modelName = modelName;
             this.encoder = Gpt2Encoder.LoadEncoder(modelName);
-            this.endOfText = np.array(new[] { this.encoder.EndOfText });
+            this.endOfText = np.array(new[] { this.encoder.EncodedEndOfText });
         }
 
         public string GenerateSample(uint seed) {
-            dynamic @out = null;
+            string sample = null;
             using (Py.GIL()) {
-                tf.reset_default_graph();
                 tf.set_random_seed(unchecked((int)seed));
                 new Session().UseSelf(session => {
                     var contextPlaceholder =
@@ -41,7 +44,7 @@
 
                     var sampleOp = Gpt2Sampler.SampleSequence(
                         hParams,
-                        length: this.sampleLength,
+                        length: Math.Min(this.sampleLength, MaxSampleLength),
                         context: contextPlaceholder,
                         batchSize: BatchSize,
                         temperature: 1.0f,
@@ -58,13 +61,21 @@
 
                     saver.restore(session, this.checkpoint);
 
-                    @out = session.run(sampleOp, feed_dict: new PythonDict<object, object> {
-                        [contextPlaceholder] = new[] {this.endOfText},
-                    });
+                    var result = new StringBuilder(this.sampleLength);
+                    while (result.Length < this.sampleLength) {
+                        var @out = session.run(sampleOp, feed_dict: new PythonDict<object, object> {
+                            [contextPlaceholder] = new[] { this.endOfText },
+                        });
+                        string chunk = this.encoder.Decode(@out[0]);
+                        result.Append(chunk);
+                    }
+
+                    sample = result.ToString(0, this.sampleLength);
                 });
+                tf.reset_default_graph();
             }
 
-            return this.encoder.Decode(@out[0]);
+            return sample;
         }
     }
 }

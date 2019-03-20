@@ -1,6 +1,7 @@
 namespace BillionSongs {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Builder;
@@ -30,15 +31,17 @@ namespace BillionSongs {
             tf.set_random_seed(5670026);
 
             string checkpoint = this.Configuration.GetValue("MODEL_CHECKPOINT", "latest");
-            string modelName = this.Configuration.GetValue<string>("GPT2_MODEL", null);
-            string runName = this.Configuration.GetValue<string>("MODEL_RUN", null);
-            checkpoint = Gpt2Trainer.ProcessCheckpointConfig(
-                checkpoint, modelName: modelName, runName: runName);
-            var textGen = new GradientTextGenerator(
-                modelName: modelName,
-                checkpoint: checkpoint,
-                sampleLength: 1024);
-            services.AddSingleton<ILyricsGenerator>(new GradientLyricsGenerator(textGen));
+            string modelName = this.Configuration.GetValue<string>("GPT2_MODEL", null)
+                ?? throw new ArgumentNullException("GPT2_MODEL");
+            string runName = this.Configuration.GetValue<string>("MODEL_RUN", null)
+                ?? throw new ArgumentNullException("MODEL_RUN");
+            string gpt2Root = this.Configuration.GetValue<string>("GPT2_ROOT", null)
+                ?? throw new ArgumentNullException("GPT2_ROOT");
+            checkpoint = Gpt2Trainer.ProcessCheckpointConfig(gpt2Root, checkpoint, modelName: modelName, runName: runName);
+            if (!File.Exists(checkpoint + ".index"))
+                throw new FileNotFoundException("Can't find checkpoint " + checkpoint);
+            services.AddSingleton<ILyricsGenerator>(new GradientLyricsGenerator(
+                gpt2Root: gpt2Root, modelName: modelName, checkpoint: checkpoint));
 
             services.Configure<CookiePolicyOptions>(options => {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.

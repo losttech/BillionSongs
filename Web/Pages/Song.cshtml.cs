@@ -1,5 +1,6 @@
 ﻿namespace BillionSongs.Pages {
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
 
     using JetBrains.Annotations;
@@ -12,8 +13,8 @@
 
         public string Lyrics { get; private set; }
 
-        public async Task OnGetAsync(uint id) {
-            this.Lyrics = await this.lyricsGenerator.GenerateLyrics(id).ConfigureAwait(false);
+        public async Task OnGetAsync(uint id, CancellationToken cancellation) {
+            this.Lyrics = await this.lyricsGenerator.GenerateLyrics(id, cancellation).ConfigureAwait(false);
         }
 
         public SongModel([NotNull] ILyricsGenerator lyricsGenerator) {
