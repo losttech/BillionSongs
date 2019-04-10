@@ -2,9 +2,12 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Gradient;
+    using LostTech.WhichPython;
     using ManyConsole.CommandLineUtils;
 
     public class GenerateTextCommand: ConsoleCommand {
@@ -12,9 +15,13 @@
         public string Checkpoint { get; private set; }
         public int MaxLength { get; private set; } = 1024;
         public uint? Seed { get; set; }
+        public string CondaEnv { get; set; }
 
         public override int Run(string[] remainingArguments) {
             Console.OutputEncoding = Encoding.UTF8;
+            if (!string.IsNullOrEmpty(this.CondaEnv))
+                GradientSetup.UsePythonEnvironment(PythonEnvironment.EnumerateCondaEnvironments()
+                    .Single(env => Path.GetFileName(env.Home) == this.CondaEnv));
 
             var generator = new GradientTextGenerator(
                 modelName: this.ModelName,
@@ -53,6 +60,7 @@
                 (int length) => this.MaxLength = length);
             this.HasOption("s|seed=", "Set the seed for the generator to ensure reproducibility",
                 (uint seed) => this.Seed = seed);
+            this.HasOption("e|conda-env=", "Name of the conda environment to use", env => this.CondaEnv = env);
             this.SkipsCommandSummaryBeforeRunning();
         }
     }

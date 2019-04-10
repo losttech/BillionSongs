@@ -1,6 +1,7 @@
 ﻿namespace BillionSongs {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Diagnostics;
     using System.Globalization;
     using System.IO;
@@ -10,9 +11,12 @@
     using System.Threading;
     using System.Threading.Tasks;
     using JetBrains.Annotations;
+    using Microsoft.Extensions.Logging;
 
     class GradientLyricsGenerator : ILyricsGenerator {
         const int MaxLength = 1024; // 2048 is more, than 80% of the songs are shorter
+        readonly ILogger<GradientLyricsGenerator> logger;
+        readonly string condaEnv;
         readonly string gpt2Root;
         readonly string modelName;
         readonly string checkpoint;
@@ -52,6 +56,11 @@
             args.Add("--seed");
             args.Add(song.ToString(CultureInfo.InvariantCulture));
 
+            if (!string.IsNullOrEmpty(this.condaEnv)) {
+                args.Add("--conda-env");
+                args.Add(this.condaEnv);
+            }
+
             var error = new StringBuilder(16*1024);
             var text = new StringBuilder(1024);
 
@@ -75,7 +84,15 @@
                         generator.BeginOutputReadLine();
 
                         while (!generator.WaitForExit(milliseconds: 100)) {
-                            cancellation.ThrowIfCancellationRequested();
+                            if (cancellation.IsCancellationRequested) {
+                                try {
+                                    generator.Kill();
+                                } catch (InvalidOperationException) {
+                                } catch (Win32Exception cantTerminate) {
+                                    this.logger.LogError(cantTerminate, "Could not terminate generator on cancellation");
+                                }
+                                cancellation.ThrowIfCancellationRequested();
+                            }
                         }
 
                         generator.WaitForExit();
@@ -92,8 +109,10 @@
                         if (!generator.HasExited) {
                             try {
                                 generator.Kill();
-                            } catch (InvalidOperationException) { } catch (
-                                System.ComponentModel.Win32Exception) { }
+                            } catch (InvalidOperationException) {
+                            } catch (Win32Exception cantTerminate) {
+                                this.logger.LogError(cantTerminate, "Could not terminate generator after timeout");
+                            }
                         }
                     }
                 }
@@ -103,10 +122,14 @@
         public GradientLyricsGenerator(
             [NotNull] string gpt2Root,
             [NotNull] string modelName,
-            [NotNull] string checkpoint) {
+            [NotNull] string checkpoint,
+            [NotNull] ILogger<GradientLyricsGenerator> logger,
+            [CanBeNull] string condaEnv) {
             this.gpt2Root = gpt2Root ?? throw new ArgumentNullException(nameof(gpt2Root));
             this.modelName = modelName ?? throw new ArgumentNullException(nameof(modelName));
             this.checkpoint = checkpoint ?? throw new ArgumentNullException(nameof(checkpoint));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            this.condaEnv = condaEnv;
         }
     }
 }

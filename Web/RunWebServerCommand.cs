@@ -18,10 +18,10 @@
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) {
             string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            string settingsFile = Environment.GetEnvironmentVariable("BILLION_SONGS_SETTINGS");
             var configuration = new ConfigurationBuilder()
-                .AddJsonFile($"{settingsFile}.json", optional: false)
-                .AddJsonFile($"{settingsFile}.{environment}.json", optional: true)
+                .SetBasePath(Environment.CurrentDirectory)
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile($"appsettings.{environment}.json", optional: true)
                 .AddCommandLine(args)
                 .AddEnvironmentVariables()
                 .Build();
@@ -29,6 +29,8 @@
                 .UseConfiguration(configuration)
                 .UseStartup<Startup>();
         }
+
+        public string Generator { get; set; }
 
         public RunWebServerCommand() {
             this.IsCommand("web");
