@@ -56,6 +56,9 @@ public class Startup {
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddScoped<ISongDatabase, CachedSongDatabase>();
+            
+            IRandomSongProvider songProvider = new TrulyRandomSongProvider();
+            services.AddSingleton(songProvider);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
