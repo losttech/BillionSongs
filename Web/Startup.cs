@@ -21,11 +21,7 @@ namespace BillionSongs {
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
 
-    using Python.Runtime;
-
-    using tensorflow;
-
-    public class Startup {
+public class Startup {
         public Startup(IConfiguration configuration, ILoggerFactory loggerFactory) {
             this.Configuration = configuration;
             this.LoggerFactory = loggerFactory;
@@ -48,9 +44,13 @@ namespace BillionSongs {
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    this.Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<ApplicationDbContext>(options => {
+                string connectionString = this.Configuration.GetConnectionString("DefaultConnection");
+                if (this.Configuration.GetValue<string>("DB", "sqlsrv") == "sqlsrv")
+                    options.UseSqlServer(connectionString);
+                else
+                    options.UseSqlite(connectionString);
+            });
             services.AddDefaultIdentity<IdentityUser>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
