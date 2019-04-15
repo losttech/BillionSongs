@@ -27,7 +27,7 @@
         public async Task<Song> GetSong(uint song, CancellationToken cancellation) {
             while (true) {
                 cancellation.ThrowIfCancellationRequested();
-                var generationTask = this.cache.GetOrCreate(Invariant($"{this.lyricsGenerator.GetType()}{song}"),
+                var generationTask = this.cache.GetOrCreate(this.GetCacheKey(song),
                     cacheEntry => this.GenerateCacheEntry(cacheEntry, song, cancellation));
 
                 try {
@@ -43,6 +43,7 @@
                 } else {
                     cacheEntry.SetSlidingExpiration(TimeSpan.FromHours(24));
                     Task<Song> result = this.FetchOrGenerateSong(song, cancellation);
+                    cacheEntry.SetAbsoluteExpiration(TimeSpan.FromDays(7));
                     cacheEntry.Value = result;
                     return result;
                 }
@@ -77,5 +78,7 @@
                 .ConfigureAwait(false);
             return song;
         }
+        
+        string GetCacheKey(uint song) => Invariant($"{this.lyricsGenerator.GetType()}{song}");
     }
 }
