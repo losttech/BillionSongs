@@ -37,13 +37,13 @@
         }
 
         Task<Song> GenerateCacheEntry(ICacheEntry cacheEntry, uint song, CancellationToken cancellation) {
-            Task<Song> result;
             lock (cacheEntry) {
                 if (cacheEntry.Value is Task<Song> generating) {
                     return generating;
                 } else {
                     cacheEntry.SetSlidingExpiration(TimeSpan.FromHours(24));
-                    cacheEntry.Value = result = this.FetchOrGenerateSong(song, cancellation);
+                    Task<Song> result = this.FetchOrGenerateSong(song, cancellation);
+                    cacheEntry.Value = result;
                     return result;
                 }
             }
@@ -57,9 +57,8 @@
 
             if (song != null) return song;
 
-            string lyrics;
             try {
-                lyrics = await this.lyricsGenerator.GenerateLyrics(songID, cancellation);
+                string lyrics = await this.lyricsGenerator.GenerateLyrics(songID, cancellation);
                 song = new Song {
                     Generated = DateTimeOffset.UtcNow,
                     ID = songID,
@@ -74,7 +73,8 @@
             }
 
             this.dbContext.Songs.Add(song);
-            await this.dbContext.SaveChangesAsync().ConfigureAwait(false);
+            await this.dbContext.SaveChangesAsync(CancellationToken.None)
+                .ConfigureAwait(false);
             return song;
         }
     }

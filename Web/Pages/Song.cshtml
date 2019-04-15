@@ -1,7 +1,7 @@
 ﻿@page "/song/{id}"
 @model BillionSongs.Pages.SongModel
 @{
-    ViewData["Title"] = "Song";
+    ViewData["Title"] = @Model.Song.Title ?? "Untitled";
 }
 
-<pre>@Model.Lyrics</pre>
+<pre>@Model.Song.Lyrics</pre>
