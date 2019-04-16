@@ -39,6 +39,14 @@ public class Startup {
                 : this.CreateGradientLyrics();
             services.AddSingleton(lyricsGenerator);
 
+            services.Configure<IdentityOptions>(options => {
+                options.Password.RequiredUniqueChars = 4;
+                options.Password.RequiredLength = 5;
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+            });
+
             services.Configure<CookiePolicyOptions>(options => {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
