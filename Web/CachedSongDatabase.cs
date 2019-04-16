@@ -47,6 +47,7 @@
                     Task<Song> result = this.FetchOrGenerateSong(songID, cancellation);
                     cacheEntry.SetAbsoluteExpiration(TimeSpan.FromDays(7));
                     cacheEntry.Value = result;
+                    cacheEntry.Dispose();
                     result.ContinueWith(songTask => {
                         if (!songTask.IsCompletedSuccessfully) return;
                         
