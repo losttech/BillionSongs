@@ -33,7 +33,9 @@ public class Startup {
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
-            services.AddMemoryCache();
+            services.AddMemoryCache(options => {
+                options.SizeLimit = this.Configuration.GetValue<long?>("MemCache:SizeLimit", null);
+            });
             
             ILyricsGenerator lyricsGenerator =
                 this.Configuration.GetValue<string>("Generator", null) == "dummy"
