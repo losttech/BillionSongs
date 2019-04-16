@@ -54,8 +54,10 @@ public class Startup {
 
             var serviceProvider = services.BuildServiceProvider();
             var pregenDatabase = serviceProvider.GetService<ISongDatabase>();
+            var pregenDbContext = serviceProvider.GetService<ApplicationDbContext>();
             services.AddSingleton<IRandomSongProvider>(sp => new PregeneratedSongProvider(
                 pregenDatabase,
+                pregenDbContext.Songs,
                 sp.GetService<ILogger<PregeneratedSongProvider>>(),
                 sp.GetService<IApplicationLifetime>().ApplicationStopping));
 

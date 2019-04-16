@@ -1,6 +1,7 @@
 namespace BillionSongs {
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,6 +9,7 @@ using BillionSongs.Data;
 
 using JetBrains.Annotations;
 
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 public class PregeneratedSongProvider: IRandomSongProvider {
@@ -20,6 +22,7 @@ public class PregeneratedSongProvider: IRandomSongProvider {
     readonly ISongDatabase songDatabase;
     readonly CancellationToken stopToken;
     readonly ILogger<PregeneratedSongProvider> logger;
+    readonly DbSet<Song> prebuiltSongs;
 
     public async Task<uint> GetRandomSongID(CancellationToken cancellation) {
         while (true) {
@@ -39,6 +42,17 @@ public class PregeneratedSongProvider: IRandomSongProvider {
     }
 
     async void Generator(CancellationToken cancellation) {
+        await this.prebuiltSongs.Take(this.desiredPoolSize)
+            .ForEachAsync(song => {
+                if (song.GeneratorError == null)
+                    this.pregenerated.Enqueue(new PregeneratedSong {
+                        id = song.ID,
+                        usesLeft = this.reuseLimit,
+                    });
+            }, cancellation).ConfigureAwait(false);
+        
+        this.logger.LogInformation($"loaded {this.pregenerated.Count} pregenerated songs");
+        
         while (!cancellation.IsCancellationRequested) {
             if (this.pregenerated.Count >= this.desiredPoolSize) {
                 this.logger.LogDebug("pregen queue full");
@@ -66,9 +80,12 @@ public class PregeneratedSongProvider: IRandomSongProvider {
     }
     
     public PregeneratedSongProvider([NotNull] ISongDatabase songDatabase,
-        [NotNull] ILogger<PregeneratedSongProvider> logger, CancellationToken stopToken) {
+        [NotNull] DbSet<Song> prebuiltSongs,
+        [NotNull] ILogger<PregeneratedSongProvider> logger,
+        CancellationToken stopToken) {
         this.songDatabase = songDatabase ?? throw new ArgumentNullException(nameof(songDatabase));
         this.stopToken = stopToken;
+        this.prebuiltSongs = prebuiltSongs ?? throw new ArgumentNullException(nameof(prebuiltSongs));
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         this.Generator(stopToken);
     }
