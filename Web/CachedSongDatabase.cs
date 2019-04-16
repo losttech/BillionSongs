@@ -6,6 +6,8 @@
     using System.Threading.Tasks;
     using BillionSongs.Data;
     using JetBrains.Annotations;
+
+    using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Caching.Memory;
 
     using static System.FormattableString;
@@ -74,8 +76,11 @@
             }
 
             this.dbContext.Songs.Add(song);
-            await this.dbContext.SaveChangesAsync(CancellationToken.None)
-                .ConfigureAwait(false);
+            try {
+                await this.dbContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
+            }
+            catch (DbUpdateException) {}
+
             return song;
         }
         

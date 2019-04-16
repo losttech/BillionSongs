@@ -22,7 +22,8 @@ namespace BillionSongs {
     using Microsoft.Extensions.Logging;
 
 public class Startup {
-        public Startup(IConfiguration configuration, ILoggerFactory loggerFactory) {
+    const string MsSql = "sqlsrv";
+    public Startup(IConfiguration configuration, ILoggerFactory loggerFactory) {
             this.Configuration = configuration;
             this.LoggerFactory = loggerFactory;
         }
@@ -44,23 +45,28 @@ public class Startup {
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddDbContext<ApplicationDbContext>(options => {
-                string connectionString = this.Configuration.GetConnectionString("DefaultConnection");
-                if (this.Configuration.GetValue<string>("DB", "sqlsrv") == "sqlsrv")
-                    options.UseSqlServer(connectionString);
-                else
-                    options.UseSqlite(connectionString);
-            });
+            services.AddDbContext<ApplicationDbContext>(this.ConfigureDbContext);
             services.AddDefaultIdentity<IdentityUser>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddScoped<ISongDatabase, CachedSongDatabase>();
-            
-            IRandomSongProvider songProvider = new TrulyRandomSongProvider();
-            services.AddSingleton(songProvider);
+
+            var serviceProvider = services.BuildServiceProvider();
+            var pregenDatabase = serviceProvider.GetService<ISongDatabase>();
+            services.AddSingleton<IRandomSongProvider>(sp => new PregeneratedSongProvider(
+                pregenDatabase,
+                sp.GetService<ILogger<PregeneratedSongProvider>>(),
+                sp.GetService<IApplicationLifetime>().ApplicationStopping));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+        }
+        void ConfigureDbContext(DbContextOptionsBuilder options) {
+            string connectionString = this.Configuration.GetConnectionString("DefaultConnection");
+            if (this.Configuration.GetValue<string>("DB", MsSql) == MsSql)
+                options.UseSqlServer(connectionString);
+            else
+                options.UseSqlite(connectionString);
         }
 
         private ILyricsGenerator CreateGradientLyrics() {
