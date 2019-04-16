@@ -27,6 +27,7 @@ public class PregeneratedSongProvider: IRandomSongProvider {
     public async Task<uint> GetRandomSongID(CancellationToken cancellation) {
         while (true) {
             if (!this.pregenerated.TryDequeue(out PregeneratedSong song)) {
+                this.logger.LogWarning("pregenerated song queue is dry");
                 await Task.Delay(this.emptyDelayInterval, cancellation).ConfigureAwait(false);
             } else {
                 int usesLeft = Interlocked.Decrement(ref song.usesLeft);
@@ -41,8 +42,9 @@ public class PregeneratedSongProvider: IRandomSongProvider {
         }
     }
 
+    const int UseOldPercentage = 75;
     async void Generator(CancellationToken cancellation) {
-        await this.prebuiltSongs.Take(this.desiredPoolSize)
+        await this.prebuiltSongs.Take(this.desiredPoolSize * UseOldPercentage / 100)
             .ForEachAsync(song => {
                 if (song.GeneratorError == null)
                     this.pregenerated.Enqueue(new PregeneratedSong {
