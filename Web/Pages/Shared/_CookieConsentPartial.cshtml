@@ -2,7 +2,8 @@
 
 @{
     var consentFeature = Context.Features.Get<ITrackingConsentFeature>();
-    var showBanner = !consentFeature?.CanTrack ?? false;
+//    var showBanner = !consentFeature?.CanTrack ?? false;
+    var showBanner = false;
     var cookieString = consentFeature?.CreateConsentCookie();
 }
 
