@@ -10,6 +10,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.RazorPages;
 
+    [ResponseCache(VaryByHeader = "User-Agent", Duration = 3*60*60)]
     public class SongModel : PageModel
     {
         readonly ISongDatabase songDatabase;
@@ -33,6 +34,9 @@
                         return this.NotFound();
                     }
                 }
+
+                if (fallback != null)
+                    return this.RedirectToPagePermanent("Song", routeValues: new { id = id });
                 return new PageResult();
             }
             catch (LyricsGeneratorException) {
