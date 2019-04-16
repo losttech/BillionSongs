@@ -1,6 +1,7 @@
 namespace BillionSongs {
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,16 +45,22 @@ public class PregeneratedSongProvider: IRandomSongProvider {
 
     const int UseOldPercentage = 75;
     async void Generator(CancellationToken cancellation) {
+        var fromDatabase = new List<PregeneratedSong>();
         await this.prebuiltSongs.Take(this.desiredPoolSize * UseOldPercentage / 100)
             .ForEachAsync(song => {
                 if (song.GeneratorError == null)
-                    this.pregenerated.Enqueue(new PregeneratedSong {
+                    fromDatabase.Add(new PregeneratedSong {
                         id = song.ID,
                         usesLeft = this.reuseLimit,
                     });
             }, cancellation).ConfigureAwait(false);
+
+        Shuffle(fromDatabase);
+        foreach (PregeneratedSong song in fromDatabase)
+            this.pregenerated.Enqueue(song);
         
         this.logger.LogInformation($"loaded {this.pregenerated.Count} pregenerated songs");
+        
         
         while (!cancellation.IsCancellationRequested) {
             if (this.pregenerated.Count >= this.desiredPoolSize) {
@@ -78,6 +85,18 @@ public class PregeneratedSongProvider: IRandomSongProvider {
             }
             catch (LyricsGeneratorException) { }
             catch (OperationCanceledException) { }
+        }
+    }
+    
+    static void Shuffle<T>(IList<T> array, Random rng = null) {
+        rng = rng ?? new Random();
+        int n = array.Count;
+        while (n > 1) 
+        {
+            int k = rng.Next(n--);
+            T temp = array[n];
+            array[n] = array[k];
+            array[k] = temp;
         }
     }
     
