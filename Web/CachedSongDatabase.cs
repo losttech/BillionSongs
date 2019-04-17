@@ -70,7 +70,7 @@
             if (song != null) return song;
 
             try {
-                string lyrics = await this.lyricsGenerator.GenerateLyrics(songID, cancellation);
+                string lyrics = await this.lyricsGenerator.GenerateLyrics(songID, cancellation).ConfigureAwait(false);
                 song = new Song {
                     Generated = DateTimeOffset.UtcNow,
                     ID = songID,
