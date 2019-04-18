@@ -99,7 +99,7 @@ namespace BillionSongs {
                 ?? throw new ArgumentNullException("GPT2_ROOT");
             checkpoint = Gpt2Trainer.ProcessCheckpointConfig(gpt2Root, checkpoint, modelName: modelName, runName: runName);
             if (!File.Exists(checkpoint + ".index"))
-                throw new FileNotFoundException("Can't find checkpoint " + checkpoint);
+                throw new FileNotFoundException("Can't find checkpoint " + checkpoint + ".index");
             lyricsGenerator = new GradientLyricsGenerator(
                 gpt2Root: gpt2Root, modelName: modelName, checkpoint: checkpoint,
                 logger: this.LoggerFactory.CreateLogger<GradientLyricsGenerator>(),

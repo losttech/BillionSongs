@@ -58,10 +58,9 @@ public class PregeneratedSongProvider: IRandomSongProvider {
         Shuffle(fromDatabase);
         foreach (PregeneratedSong song in fromDatabase)
             this.pregenerated.Enqueue(song);
-        
+
         this.logger.LogInformation($"loaded {this.pregenerated.Count} pregenerated songs");
-        
-        
+
         while (!cancellation.IsCancellationRequested) {
             if (this.pregenerated.Count >= this.desiredPoolSize) {
                 this.logger.LogDebug("pregen queue full");
@@ -87,7 +86,7 @@ public class PregeneratedSongProvider: IRandomSongProvider {
             catch (OperationCanceledException) { }
         }
     }
-    
+
     static void Shuffle<T>(IList<T> array, Random rng = null) {
         rng = rng ?? new Random();
         int n = array.Count;
@@ -99,7 +98,7 @@ public class PregeneratedSongProvider: IRandomSongProvider {
             array[k] = temp;
         }
     }
-    
+
     public PregeneratedSongProvider([NotNull] ISongDatabase songDatabase,
         [NotNull] DbSet<Song> prebuiltSongs,
         [NotNull] ILogger<PregeneratedSongProvider> logger,

@@ -6,7 +6,6 @@
     using BillionSongs.Data;
 
     using JetBrains.Annotations;
-
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -52,7 +51,8 @@
             }
         }
 
-        public SongModel([NotNull] ISongDatabase songDatabase, [NotNull] IRandomSongProvider randomSongProvider) {
+        public SongModel([NotNull] ISongDatabase songDatabase,
+                         [NotNull] IRandomSongProvider randomSongProvider) {
             this.songDatabase = songDatabase ?? throw new ArgumentNullException(nameof(songDatabase));
             this.randomSongProvider = randomSongProvider ?? throw new ArgumentNullException(nameof(randomSongProvider));
         }

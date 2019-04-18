@@ -12,6 +12,7 @@
 </article>
 
 <section>
+    <iframe src="@Url.Page("SongVotes", values: new { id = Model.Song.ID })" style="border: 0"/>
 @*     <iframe src="https://www.facebook.com/plugins/share_button.php?href=@( *@
 @*                 WebUtility.UrlEncode(Url.Page("Song", pageHandler: null, values: new { id = @Model.Song.ID }, protocol: Request.Scheme)) *@
 @*             )&layout=button_count&size=small&width=86&height=20&appId" *@
