@@ -32,12 +32,6 @@
                 });
         }
 
-        public class SongSummary {
-            public Song Song { get; set; }
-            public int Upvotes { get; set; }
-            public int Downvotes { get; set; }
-        }
-
         public TopSongsModel([NotNull] ApplicationDbContext db) {
             this.db = db ?? throw new ArgumentNullException(nameof(db));
         }

@@ -1,0 +1,14 @@
+﻿@page "/my/votes"
+@model BillionSongs.Pages.MyVotesModel
+@{
+    ViewData["Title"] = "My Votes";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>My Votes</h2>
+
+@foreach (var vote in Model.Songs.OrderByDescending(v => v.Upvotes).ThenBy(v => v.Song.Title)) {
+    <div>
+        <partial name="_SongSummaryPartial" model="@vote" />
+    </div>
+}

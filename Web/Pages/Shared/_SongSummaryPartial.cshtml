@@ -1,0 +1,18 @@
+﻿@model SongSummary
+@{
+    string FirstLine(string text) {
+        if (string.IsNullOrEmpty(text)) return text;
+
+        int firstLineEnd = text.IndexOf('\n');
+        return firstLineEnd < 0 ? text : text.Substring(0, firstLineEnd);
+    }
+
+    string title = Model.Song.Title ?? FirstLine(Model.Song.Lyrics);
+}
+
+<h3 style="padding-top: 2pt">
+    <a href="@Url.Page("Song", new { id = Model.Song.ID })" title="@title">
+        @title
+    </a>
+    <small class="text-muted" style="font-size: 70%">🖒 @Model.Upvotes  🖓 @Model.Downvotes</small>
+</h3>

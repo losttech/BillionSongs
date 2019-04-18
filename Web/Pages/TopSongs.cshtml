@@ -4,27 +4,13 @@
 @{
     ViewData["Title"] = "Top 10 songs";
     Layout = "~/Pages/Shared/_Layout.cshtml";
-
-    string FirstLine(string text) {
-        if (string.IsNullOrEmpty(text)) return text;
-
-        int firstLineEnd = text.IndexOf('\n');
-        return firstLineEnd < 0 ? text : text.Substring(0, firstLineEnd);
-    }
 }
 
 <h2>Top 10 songs of all time</h2>
 <ol start="0">
 @foreach (var summary in Model.Top) {
-    string title = summary.Song.Title ?? FirstLine(summary.Song.Lyrics);
     <li>
-        <h3 style="padding-top: 2pt">
-            <a href="@Url.Page("Song", new { id = summary.Song.ID })" title="@title">
-                @title
-            </a>
-            <small class="text-muted" style="font-size: 70%">🖒@summary.Upvotes  🖓 @summary.Downvotes</small>
-        </h3>
-        <span class="small text-muted"></span>
+        <partial name="_SongSummaryPartial" model="@summary" />
     </li>
 }
 </ol>
