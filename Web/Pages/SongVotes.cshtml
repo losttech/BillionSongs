@@ -9,9 +9,12 @@
     <form method="post" target="_parent">
         <div class="btn-group btn-group-xs">
             <button id="upvote" type="submit" asp-page-handler="Upvote"
-                    class="btn @(Model.OwnVote == true ? ".active": "")">👍 @Model.Upvotes</button>
+                    class="btn @(Model.OwnVote == true ? ".active": "")"
+                    style="padding-left: 0">👍 @Model.Upvotes</button>
             <button id="downvote" type="submit" asp-page-handler="Downvote"
-                    class="btn @(Model.OwnVote == false ? ".active": "")">@Model.Downvotes 👎</button>
+                    class="btn @(Model.OwnVote == false ? ".active": "")"
+                    style="padding-right: 0">@Model.Downvotes 👎</button>
         </div>
     </form>
+    <partial name="_LoginPartial" model="@Url.Page("Song", new { id = Model.ID })" />
 </body>

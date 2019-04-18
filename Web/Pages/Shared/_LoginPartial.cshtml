@@ -1,26 +1,20 @@
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Http.Extensions
+@model string
 @inject SignInManager<SongsUser> SignInManager
 @inject UserManager<SongsUser> UserManager
 
-<ul class="navbar-nav">
-@if (SignInManager.IsSignedIn(User))
-{
-    <li class="nav-item">
-        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity.Name!</a>
-    </li>
-    <li class="nav-item">
-        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post" >
-            <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+<div class="text-muted" style="font-size: 70%">
+@if (SignInManager.IsSignedIn(User)) {
+    <div>
+        logged in as
+        <a asp-area="Identity" asp-page="/Account/Manage/Index" target="_parent"
+            class="text-dark" title="Manage">@User.Identity.Name</a>
+        <form asp-area="Identity" asp-page="/Account/Logout" method="post" target="_parent"
+                asp-route-returnUrl="@(Model ?? Context.Request.GetEncodedPathAndQuery())"
+                class="form-inline" style="display: inline-flex">
+            <button type="submit" class="btn btn-link" style="font-size: 100%; padding: 0">(logout)</button>
         </form>
-    </li>
+    </div>
 }
-else
-{
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
-    </li>
-}
-</ul>
+</div>
