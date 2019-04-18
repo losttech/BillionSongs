@@ -2,13 +2,17 @@
 @model BillionSongs.Pages.SongVotesModel
 @{
     ViewData["Title"] = "SongVotes";
-    Layout = null;
+    Layout = "_BareLayout";
 }
 
 <body style="margin: 0">
     <form method="post" target="_parent">
-        <button id="upvote" type="submit" asp-page-handler="Upvote">👍 ...</button>
-        <button id="downvote" type="submit" asp-page-handler="Downvote">👎 ...</button>
+        <div class="btn-group btn-group-xs">
+            <button id="upvote" type="submit" asp-page-handler="Upvote"
+                    class="btn">👍 ...</button>
+            <button id="downvote" type="submit" asp-page-handler="Downvote"
+                    class="btn">... 👎</button>
+        </div>
     </form>
 </body>
 
