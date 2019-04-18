@@ -11,8 +11,18 @@
     using Microsoft.EntityFrameworkCore;
 
     public class SongVotesModel : PageModel {
+        public int Upvotes { get; set; }
+        public int Downvotes { get; set; }
+        public bool? OwnVote { get; set; }
+
         readonly ApplicationDbContext db;
-        public void OnGet() { }
+
+        public async Task OnGetAsync(uint id, CancellationToken cancellation = default) {
+            string userID = this.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            this.OwnVote = (await this.db.Votes.FindAsync(id, userID).ConfigureAwait(false))?.Upvote;
+            this.Upvotes = await this.db.Votes.CountAsync(vote => vote.SongID == id && vote.Upvote, cancellation).ConfigureAwait(false);
+            this.Downvotes = await this.db.Votes.CountAsync(vote => vote.SongID == id && !vote.Upvote, cancellation).ConfigureAwait(false);
+        }
 
         public SongVotesModel(ApplicationDbContext db) {
             this.db = db ?? throw new ArgumentNullException(nameof(db));

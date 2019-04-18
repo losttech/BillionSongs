@@ -9,10 +9,9 @@
     <form method="post" target="_parent">
         <div class="btn-group btn-group-xs">
             <button id="upvote" type="submit" asp-page-handler="Upvote"
-                    class="btn">👍 ...</button>
+                    class="btn @(Model.OwnVote == true ? ".active": "")">👍 @Model.Upvotes</button>
             <button id="downvote" type="submit" asp-page-handler="Downvote"
-                    class="btn">... 👎</button>
+                    class="btn @(Model.OwnVote == false ? ".active": "")">@Model.Downvotes 👎</button>
         </div>
     </form>
 </body>
-
