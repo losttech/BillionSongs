@@ -50,7 +50,7 @@
                     cacheEntry.Dispose();
                     result.ContinueWith(songTask => {
                         if (!songTask.IsCompletedSuccessfully) return;
-                        
+
                         Song song = songTask.Result;
                         cacheEntry.SetSize(
                             song.Title?.Length + song.Lyrics?.Length +
@@ -92,7 +92,7 @@
 
             return song;
         }
-        
+
         string GetCacheKey(uint song) => Invariant($"{this.lyricsGenerator.GetType()}{song}");
     }
 }

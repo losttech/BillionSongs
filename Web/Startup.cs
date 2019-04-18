@@ -21,9 +21,9 @@ namespace BillionSongs {
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
 
-public class Startup {
-    const string MsSql = "sqlsrv";
-    public Startup(IConfiguration configuration, ILoggerFactory loggerFactory) {
+    public class Startup {
+        const string MsSql = "sqlsrv";
+        public Startup(IConfiguration configuration, ILoggerFactory loggerFactory) {
             this.Configuration = configuration;
             this.LoggerFactory = loggerFactory;
         }
@@ -36,7 +36,7 @@ public class Startup {
             services.AddMemoryCache(options => {
                 options.SizeLimit = this.Configuration.GetValue<long?>("MemCache:SizeLimit", null);
             });
-            
+
             ILyricsGenerator lyricsGenerator =
                 this.Configuration.GetValue<string>("Generator", null) == "dummy"
                 ? new DummyLyrics()
@@ -58,7 +58,7 @@ public class Startup {
             });
 
             services.AddDbContext<ApplicationDbContext>(this.ConfigureDbContext);
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddDefaultIdentity<SongsUser>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 

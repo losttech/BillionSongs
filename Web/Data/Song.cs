@@ -1,5 +1,6 @@
 ﻿namespace BillionSongs.Data {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     public class Song {
         [Key]
@@ -10,5 +11,6 @@
         public string Lyrics { get; set; }
         public DateTimeOffset Generated { get; set; }
         public string GeneratorError { get; set; }
+        public List<SongVote> Votes { get; set; }
     }
 }
