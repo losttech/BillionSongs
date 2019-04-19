@@ -17,6 +17,7 @@
         public bool? OwnVote { get; set; }
 
         readonly ApplicationDbContext db;
+        readonly SongVoteCache voteCache;
 
         public async Task OnGetAsync(uint id, CancellationToken cancellation = default) {
             this.ID = id;
@@ -26,8 +27,9 @@
             this.Downvotes = await this.db.Votes.CountAsync(vote => vote.SongID == id && !vote.Upvote, cancellation).ConfigureAwait(false);
         }
 
-        public SongVotesModel(ApplicationDbContext db) {
+        public SongVotesModel(ApplicationDbContext db, SongVoteCache voteCache) {
             this.db = db ?? throw new ArgumentNullException(nameof(db));
+            this.voteCache = voteCache ?? throw new ArgumentNullException(nameof(voteCache));
         }
 
         public Task<IActionResult> OnPostUpvote(uint id, CancellationToken cancellation = default)
@@ -47,19 +49,38 @@
         async Task<IActionResult> SetVote(uint id, bool upvote, CancellationToken cancellation) {
             string userID = this.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var existing = await this.db.Votes.FindAsync(id, userID).ConfigureAwait(false);
+
+            int deltaUpvote = 0;
+            int deltaDownvote = 0;
+
             if (existing == null) {
                 this.db.Votes.Add(new SongVote {
                     SongID = id,
                     UserID = this.User.FindFirstValue(ClaimTypes.NameIdentifier),
                     Upvote = upvote,
                 });
+                if (upvote)
+                    deltaUpvote++;
+                else
+                    deltaDownvote++;
             } else {
+                if (existing.Upvote == upvote)
+                    return this.RedirectToPage("Song", routeValues: new { id = id });
+
+                int delta = upvote ? 1 : -1;
+                deltaUpvote += delta;
+                deltaDownvote -= delta;
+
                 existing.Upvote = upvote;
                 this.db.Votes.Update(existing);
             }
 
             try {
                 await this.db.SaveChangesAsync(cancellation).ConfigureAwait(false);
+                if (deltaUpvote != 0)
+                    this.voteCache.AddUpvotes(id, deltaUpvote);
+                if (deltaDownvote != 0)
+                    this.voteCache.AddDownvotes(id, deltaDownvote);
             } catch(DbUpdateConcurrencyException) { }
 
             return this.RedirectToPage("Song", routeValues: new { id = id });

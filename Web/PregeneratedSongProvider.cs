@@ -46,7 +46,7 @@ public class PregeneratedSongProvider: IRandomSongProvider {
     const int UseOldPercentage = 75;
     async void Generator(CancellationToken cancellation) {
         var fromDatabase = new List<PregeneratedSong>();
-        await this.prebuiltSongs.Take(this.desiredPoolSize * UseOldPercentage / 100)
+        await this.prebuiltSongs.AsNoTracking().Take(this.desiredPoolSize * UseOldPercentage / 100)
             .ForEachAsync(song => {
                 if (song.GeneratorError == null)
                     fromDatabase.Add(new PregeneratedSong {

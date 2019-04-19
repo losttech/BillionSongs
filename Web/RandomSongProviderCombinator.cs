@@ -1,4 +1,6 @@
-﻿namespace BillionSongs {
+﻿using Microsoft.Extensions.Logging;
+
+namespace BillionSongs {
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -6,12 +8,18 @@
     using System.Threading.Tasks;
     public class RandomSongProviderCombinator : IRandomSongProvider {
         readonly WeightedRandom<IRandomSongProvider> providers;
+        readonly ILogger<RandomSongProviderCombinator> logger;
 
-        public Task<uint> GetRandomSongID(CancellationToken cancellation)
-            => this.providers.GetRandom(ThreadSafeRandom.Instance).GetRandomSongID(cancellation);
+        public Task<uint> GetRandomSongID(CancellationToken cancellation) {
+            IRandomSongProvider provider = this.providers.GetRandom(ThreadSafeRandom.Instance);
+            this.logger?.LogDebug($"random song from {provider}");
+            return provider.GetRandomSongID(cancellation);
+        }
 
-        public RandomSongProviderCombinator(WeightedRandom<IRandomSongProvider> providers) {
-            this.providers = providers ?? throw new ArgumentNullException(nameof(providers));
+        public RandomSongProviderCombinator(WeightedRandom<IRandomSongProvider> providers,
+        ILogger<RandomSongProviderCombinator> logger) {
+            this.providers = providers;
+            this.logger = logger;
         }
     }
 }

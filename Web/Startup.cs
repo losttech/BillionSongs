@@ -1,5 +1,6 @@
 namespace BillionSongs {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
 
@@ -67,11 +68,20 @@ namespace BillionSongs {
             var serviceProvider = services.BuildServiceProvider();
             var pregenDatabase = serviceProvider.GetService<ISongDatabase>();
             var pregenDbContext = serviceProvider.GetService<ApplicationDbContext>();
-            services.AddSingleton<IRandomSongProvider>(sp => new PregeneratedSongProvider(
+            var songVoteCache = SongVoteCache.Load(pregenDbContext.Votes);
+            services.AddSingleton(songVoteCache);
+            services.AddSingleton(sp => new PregeneratedSongProvider(
                 pregenDatabase,
                 pregenDbContext.Songs,
                 sp.GetService<ILogger<PregeneratedSongProvider>>(),
                 sp.GetService<IApplicationLifetime>().ApplicationStopping));
+            services.AddSingleton<IRandomSongProvider>(sp => new RandomSongProviderCombinator(
+                new WeightedRandom<IRandomSongProvider>(
+                    new Dictionary<IRandomSongProvider, int>{
+                        [sp.GetRequiredService<PregeneratedSongProvider>()] = 3,
+                        [new TopSongWeightedProvider(sp.GetRequiredService<SongVoteCache>())] = 1,
+                    }
+            ), logger: sp.GetService<ILogger<RandomSongProviderCombinator>>()));
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
