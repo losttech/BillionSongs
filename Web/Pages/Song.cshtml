@@ -5,13 +5,13 @@
     ViewData["Title"] = @Model.Song.Title ?? "Untitled";
 }
 
-<article>
+<article style="text-align: center">
     <h3>@(Model.Song.Title ?? "Untitled")</h3>
 
     <pre>@Model.Song.Lyrics</pre>
 </article>
 
-<section>
+<section style="text-align: center">
     <iframe src="@Url.Page("SongVotes", values: new { id = Model.Song.ID })"
             style="border: 0; width: 360pt; height: 40pt;"></iframe>
 @*     <iframe src="https://www.facebook.com/plugins/share_button.php?href=@( *@
