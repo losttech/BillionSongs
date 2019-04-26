@@ -14,7 +14,8 @@ TBA
 
 # Train instructions
 
-TBA, but should be as easy as running GPT-2 project train command on .csv dataset.
+TBA, but should be as easy as running GPT-2 project train command on .csv dataset,
+which you can download from [Kaggle](https://kaggle.com/).
 
 # What is it, and how does it work?
 
