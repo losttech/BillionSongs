@@ -8,14 +8,30 @@ Development instance can be accessed here:
 > NOTE: this repository has git submodules.
 > Learn about them [here](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
 
+# Prerequisites
+
+1. Download and install Python and TensorFlow as described in
+[Gradient documentation](https://github.com/losttech/Gradient/#install-python-tensorflow)
+2. Install Python package, `called regex` (`python -m pip install regex --user`)
+3. Install the latest .NET Core SDK
+
 # Run instructions
 
 TBA
 
 # Train instructions
 
-TBA, but should be as easy as running GPT-2 project train command on .csv dataset,
-which you can download from [Kaggle](https://kaggle.com/).
+> NOTE: training requires a lot of RAM (>16GB), and will be slow on non-GPU
+
+1. Download the original 117M GPT-2 model by running
+one of download_model.* scripts in External/Gradient-Samples/GPT-2
+from the same directory.
+2. Download and extract any lyrics dataset (I used 
+[Every song you have heard (almost)!](https://www.kaggle.com/artimous/every-song-you-have-heard-almost)),
+and unpack it if needed.
+3. From the command line in the same directory (GPT-2), run
+`dotnet train --include *.csv --column Lyrics path/to/lyrics/folder`
+(change the `column` parameter to the name of the lyrics column in you dataset)
 
 # What is it, and how does it work?
 
