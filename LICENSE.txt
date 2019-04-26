@@ -1,0 +1,22 @@
+Free for non-profit.
+
+If modified, Lost Tech LLC copyright and powered by Gradient notices
+must be retained on all web pages. This license must be visibly linked too.
+
+Any modifications must be submitted as pull requests to the original repository
+before being exposed to the Internet (no accept required), granting Lost Tech LLC
+free, irrevocable right to use the modification without restriction
+for any purpose, including world domination.
+
+Any art works produced by this software are free to use for non-commecial
+purposes, but otherwise belong to Lost Tech LLC. Lost Tech LLC does not claim
+authorship rights on any art work, produced by this software,
+that is more than 30% identical to a part or whole of one of the works in the
+original dataset.
+
+Lost Tech LLC is not to be held liable for any copyrighted works, accidentally
+reproduced by this software in whole or in parts.
+Please, use contact@losttech.sofware to have your copyrighed work removed
+from Billion Songs website(s), hosted by Lost Tech LLC. Lost Tech LLC can not
+be held liable for this software hosted elsewhere, displaying your
+copyrighted songs.
