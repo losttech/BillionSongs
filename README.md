@@ -30,12 +30,13 @@ from the same directory.
 [Every song you have heard (almost)!](https://www.kaggle.com/artimous/every-song-you-have-heard-almost)),
 and unpack it if needed.
 3. From the command line in the same directory (GPT-2), run
-`dotnet train --include *.csv --column Lyrics path/to/lyrics/folder`
+`dotnet run train --include *.csv --column Lyrics path/to/lyrics/folder --run Lyrics`
 (change the `column` parameter to the name of the lyrics column in you dataset)
-
 > NOTE: dev instance was trained with `train -i "*.csv" --column=Lyrics Downloads\every-song-you-have-heard-almost -r Lyrics --checkpoint=fresh --save-every=100 -n 3`.
 > If training from IDE, set working directory to GPT-2
 > (which should contain `models` subfolder downloaded previously).
+4. Interrupt training process, when samples start looking good.
+5. Try the trained model by running `dotnet run --run Lyrics`
 
 # What is it, and how does it work?
 
