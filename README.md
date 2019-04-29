@@ -17,7 +17,15 @@ Development instance can be accessed here:
 
 # Run instructions
 
-TBA
+1. After cloning the repository, enter the `Web` folder and run `dotnet ef database update`.
+That should create `songs.db` file in the same directory.
+2. Edit `appsettings.json` (see `appsettings.Development.json` for an example):
+ - add `"DB": "sqlite"`
+ - modify `DefaultConnection` to `"DefaultConnection": "Data Source=songs.db"`
+3. Run `dotnet run web`. This should print some logs.
+`Wait for Now listening on: http://localhost:5000`, then open that URL in the browser.
+It will take up to 4 minutes to generate the first song.
+
 
 # Train instructions
 
