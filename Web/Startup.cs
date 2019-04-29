@@ -66,16 +66,18 @@ namespace BillionSongs {
 
             services.AddScoped<ISongDatabase, CachedSongDatabase>();
 
-            var serviceProvider = services.BuildServiceProvider();
-            var pregenDatabase = serviceProvider.GetService<ISongDatabase>();
-            var pregenDbContext = serviceProvider.GetService<ApplicationDbContext>();
-            var songVoteCache = SongVoteCache.Load(pregenDbContext.Votes);
-            services.AddSingleton(songVoteCache);
-            services.AddSingleton(sp => new PregeneratedSongProvider(
-                pregenDatabase,
-                pregenDbContext.Songs,
-                sp.GetService<ILogger<PregeneratedSongProvider>>(),
-                sp.GetService<IApplicationLifetime>().ApplicationStopping));
+            services.AddSingleton(sp => {
+                var scopedProvider = sp.CreateScope().ServiceProvider;
+                return SongVoteCache.Load(scopedProvider.GetService<ApplicationDbContext>().Votes);
+            });
+            services.AddSingleton(sp => {
+                var scopedProvider = sp.CreateScope().ServiceProvider;
+                return new PregeneratedSongProvider(
+                    scopedProvider.GetService<ISongDatabase>(),
+                    scopedProvider.GetService<ApplicationDbContext>().Songs,
+                    sp.GetService<ILogger<PregeneratedSongProvider>>(),
+                    sp.GetService<IApplicationLifetime>().ApplicationStopping);
+            });
             services.AddSingleton<IRandomSongProvider>(sp => new RandomSongProviderCombinator(
                 new WeightedRandom<IRandomSongProvider>(
                     new Dictionary<IRandomSongProvider, int>{
