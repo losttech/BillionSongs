@@ -5,14 +5,14 @@ our TensorFlow binding for C# and other .NET languages.
 Development instance can be accessed here:
 [Billion Songs Dev](http://billion.dev.losttech.software:2095/).
 
-> NOTE: this repository has git submodules.
+> NOTE: this repository has git submodules. So clone with --recurse-submodules.
 > Learn about them [here](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
 
 # Prerequisites
 
 1. Download and install Python and TensorFlow as described in
 [Gradient documentation](https://github.com/losttech/Gradient/#install-python-tensorflow)
-2. Install Python package, `called regex` (`python -m pip install regex --user`)
+2. Install Python package, called `regex` (`python -m pip install regex --user`)
 3. Install the latest .NET Core SDK
 
 # Run instructions
@@ -20,10 +20,10 @@ Development instance can be accessed here:
 1. After cloning the repository, enter the `Web` folder and run `dotnet ef database update`.
 That should create `songs.db` file in the same directory.
 2. Edit `appsettings.json` (see `appsettings.Development.json` for an example):
- - add `"DB": "sqlite"`
- - modify `DefaultConnection` to `"DefaultConnection": "Data Source=songs.db"`
+    - add `"DB": "sqlite"`
+    - modify `DefaultConnection` to `"DefaultConnection": "Data Source=songs.db"`
 3. Run `dotnet run web`. This should print some logs.
-`Wait for Now listening on: http://localhost:5000`, then open that URL in the browser.
+Wait for `Now listening on: http://`, then open that URL in the browser.
 It will take up to 4 minutes to generate the first song.
 
 
