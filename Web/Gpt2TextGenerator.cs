@@ -10,7 +10,7 @@
     using tensorflow;
     using tensorflow.train;
 
-    public class GradientTextGenerator {
+    public class Gpt2TextGenerator {
         const int BatchSize = 1;
         const int MaxSampleLength = 1024;
         readonly Gpt2Encoder encoder;
@@ -21,7 +21,7 @@
 
         public string EndOfText => Gpt2Encoder.EndOfTextPseudoToken;
 
-        public GradientTextGenerator([NotNull] string modelName, [NotNull] string checkpoint, int sampleLength) {
+        public Gpt2TextGenerator([NotNull] string modelName, [NotNull] string checkpoint, int sampleLength) {
             if (string.IsNullOrEmpty(modelName)) throw new ArgumentNullException(nameof(modelName));
             if (string.IsNullOrEmpty(checkpoint)) throw new ArgumentNullException(nameof(checkpoint));
             if (sampleLength < 0 || sampleLength > 1024*1024)

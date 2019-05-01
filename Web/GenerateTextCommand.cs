@@ -23,7 +23,7 @@
                 GradientSetup.UsePythonEnvironment(PythonEnvironment.EnumerateCondaEnvironments()
                     .Single(env => Path.GetFileName(env.Home) == this.CondaEnv));
 
-            var generator = new GradientTextGenerator(
+            var generator = new Gpt2TextGenerator(
                 modelName: this.ModelName,
                 checkpoint: this.Checkpoint,
                 sampleLength: this.MaxLength);
