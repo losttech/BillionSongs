@@ -147,9 +147,9 @@ namespace BillionSongs {
                 }
             }
 
-            return new GradientLyricsGenerator(
+            return new Gpt2LyricsGenerator(
                 gpt2Root: gpt2Root, modelName: modelName, checkpoint: checkpoint,
-                logger: this.LoggerFactory.CreateLogger<GradientLyricsGenerator>(),
+                logger: this.LoggerFactory.CreateLogger<Gpt2LyricsGenerator>(),
                 condaEnv: condaEnvName);
         }
 

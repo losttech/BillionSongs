@@ -13,9 +13,9 @@
     using JetBrains.Annotations;
     using Microsoft.Extensions.Logging;
 
-    class GradientLyricsGenerator : ILyricsGenerator {
+    class Gpt2LyricsGenerator : ILyricsGenerator {
         const int MaxLength = 1024; // 2048 is more, than 80% of the songs are shorter
-        readonly ILogger<GradientLyricsGenerator> logger;
+        readonly ILogger<Gpt2LyricsGenerator> logger;
         readonly string condaEnv;
         readonly string gpt2Root;
         readonly string modelName;
@@ -119,11 +119,11 @@
             }, cancellation);
         }
 
-        public GradientLyricsGenerator(
+        public Gpt2LyricsGenerator(
             [NotNull] string gpt2Root,
             [NotNull] string modelName,
             [NotNull] string checkpoint,
-            [NotNull] ILogger<GradientLyricsGenerator> logger,
+            [NotNull] ILogger<Gpt2LyricsGenerator> logger,
             [CanBeNull] string condaEnv) {
             this.gpt2Root = gpt2Root ?? throw new ArgumentNullException(nameof(gpt2Root));
             this.modelName = modelName ?? throw new ArgumentNullException(nameof(modelName));
