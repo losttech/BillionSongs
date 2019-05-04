@@ -90,7 +90,7 @@ namespace BillionSongs {
         }
 
         static async void CheckGeneratorSanity(ILyricsGenerator lyricsGenerator)
-            => await lyricsGenerator.GenerateLyrics(song: 1362233347, CancellationToken.None)
+            => await lyricsGenerator.GenerateLyrics(song: 1310987516, CancellationToken.None)
                 .ConfigureAwait(false);
 
         void ConfigureDbContext(DbContextOptionsBuilder options) {
