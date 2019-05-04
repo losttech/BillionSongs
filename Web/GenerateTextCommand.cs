@@ -19,6 +19,7 @@
 
         public override int Run(string[] remainingArguments) {
             Console.OutputEncoding = Encoding.UTF8;
+            GradientLog.WarningWriter = GradientLog.OutputWriter = Console.Error;
             if (!string.IsNullOrEmpty(this.CondaEnv))
                 GradientSetup.UsePythonEnvironment(PythonEnvironment.EnumerateCondaEnvironments()
                     .Single(env => Path.GetFileName(env.Home) == this.CondaEnv));
