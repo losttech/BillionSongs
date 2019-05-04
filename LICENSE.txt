@@ -1,22 +1,7 @@
-Free for non-profit.
+Copyright 2019 Victor Milovanov & Lost Tech LLC
 
-If modified, Lost Tech LLC copyright and powered by Gradient notices
-must be retained on all web pages. This license must be visibly linked too.
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-Any modifications must be submitted as pull requests to the original repository
-before being exposed to the Internet (no accept required), granting Lost Tech LLC
-free, irrevocable right to use the modification without restriction
-for any purpose, including world domination.
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-Any art works produced by this software are free to use for non-commecial
-purposes, but otherwise belong to Lost Tech LLC. Lost Tech LLC does not claim
-authorship rights on any art work, produced by this software,
-that is more than 30% identical to a part or whole of one of the works in the
-original dataset.
-
-Lost Tech LLC is not to be held liable for any copyrighted works, accidentally
-reproduced by this software in whole or in parts.
-Please, use contact@losttech.sofware to have your copyrighed work removed
-from Billion Songs website(s), hosted by Lost Tech LLC. Lost Tech LLC can not
-be held liable for this software hosted elsewhere, displaying your
-copyrighted songs.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
