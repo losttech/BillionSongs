@@ -40,7 +40,6 @@
             } else
                 startInfo.FileName = ExecutablePath;
 
-
             var args = startInfo.ArgumentList;
             args.Add("generate");
 
