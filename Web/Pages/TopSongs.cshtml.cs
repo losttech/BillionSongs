@@ -8,32 +8,31 @@
     using JetBrains.Annotations;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.RazorPages;
-    using Microsoft.EntityFrameworkCore;
 
-    [ResponseCache(VaryByHeader = "User-Agent", Duration = 60)]
+    [ResponseCache(VaryByHeader = "User-Agent", Duration = 5*60)]
     public class TopSongsModel : PageModel {
-        readonly ApplicationDbContext db;
+        readonly ISongDatabase db;
+        readonly SongVoteCache voteCache;
 
         public List<SongSummary> Top { get; } = new List<SongSummary>();
 
         public async Task OnGetAsync(CancellationToken cancellation = default) {
-            var summaries = await this.db.Songs.Select(song => new {
-                Song = song,
-                Upvotes = song.Votes.Count(vote => vote.Upvote),
-                Downvotes = song.Votes.Count(vote => !vote.Upvote),
-            }).OrderByDescending(summary => summary.Upvotes - summary.Downvotes)
-              .Take(10).ToArrayAsync(cancellation).ConfigureAwait(false);
+            var summaries = this.voteCache.AllSongs
+                .OrderByDescending(summary => summary.VoteSum)
+                .Take(10)
+                .ToArray();
 
             foreach (var summary in summaries)
                 this.Top.Add(new SongSummary {
-                    Song = summary.Song,
+                    Song = await this.db.GetSong(summary.Song.ID, cancellation).ConfigureAwait(false),
                     Upvotes = summary.Upvotes,
                     Downvotes = summary.Downvotes,
                 });
         }
 
-        public TopSongsModel([NotNull] ApplicationDbContext db) {
+        public TopSongsModel([NotNull] ISongDatabase db, [NotNull] SongVoteCache voteCache) {
             this.db = db ?? throw new ArgumentNullException(nameof(db));
+            this.voteCache = voteCache ?? throw new ArgumentNullException(nameof(voteCache));
         }
     }
 }
