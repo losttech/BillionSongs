@@ -1,3 +1,6 @@
 [submodule "External/Gradient-Samples"]
 	path = External/Gradient-Samples
 	url = https://github.com/losttech/Gradient-Samples.git
+[submodule "External/MidiSharp"]
+	path = External/MidiSharp
+	url = https://github.com/losttech/MidiSharp.git
