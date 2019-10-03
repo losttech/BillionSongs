@@ -104,8 +104,7 @@ namespace BillionSongs {
         private ILyricsGenerator CreateGradientLyrics() {
             string condaEnvName = this.Configuration.GetValue<string>("PYTHON_CONDA_ENV_NAME", null);
             if (!string.IsNullOrEmpty(condaEnvName))
-                GradientSetup.UsePythonEnvironment(PythonEnvironment.EnumerateCondaEnvironments()
-                    .Single(env => Path.GetFileName(env.Home) == condaEnvName));
+                GradientSetup.UseCondaEnvironment(condaEnvName);
 
             var logger = this.LoggerFactory.CreateLogger<Startup>();
             bool download = this.Configuration.GetValue("Model:Download", defaultValue: true);

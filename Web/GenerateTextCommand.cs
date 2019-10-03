@@ -21,8 +21,7 @@
             Console.OutputEncoding = Encoding.UTF8;
             GradientLog.WarningWriter = GradientLog.OutputWriter = Console.Error;
             if (!string.IsNullOrEmpty(this.CondaEnv))
-                GradientSetup.UsePythonEnvironment(PythonEnvironment.EnumerateCondaEnvironments()
-                    .Single(env => Path.GetFileName(env.Home) == this.CondaEnv));
+                GradientSetup.UseCondaEnvironment(this.CondaEnv);
 
             var generator = new Gpt2TextGenerator(
                 modelName: this.ModelName,
