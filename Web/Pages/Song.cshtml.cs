@@ -9,7 +9,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.RazorPages;
 
-    [ResponseCache(VaryByHeader = "User-Agent", Duration = 3*60*60)]
+    [ResponseCache(VaryByHeader = "User-Agent", Duration = 30*24*60*60)]
     public class SongModel : PageModel
     {
         readonly ISongDatabase songDatabase;
