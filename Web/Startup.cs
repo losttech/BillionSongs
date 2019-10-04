@@ -20,6 +20,7 @@ namespace BillionSongs {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
 
     public class Startup {
@@ -61,7 +62,7 @@ namespace BillionSongs {
 
             services.AddDbContext<ApplicationDbContext>(this.ConfigureDbContext);
             services.AddDefaultIdentity<SongsUser>()
-                .AddDefaultUI(UIFramework.Bootstrap4)
+                .AddDefaultUI()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddScoped<ISongDatabase, CachedSongDatabase>();
@@ -76,7 +77,7 @@ namespace BillionSongs {
                     scopedProvider.GetService<ISongDatabase>(),
                     scopedProvider.GetService<ApplicationDbContext>().Songs,
                     sp.GetService<ILogger<PregeneratedSongProvider>>(),
-                    sp.GetService<IApplicationLifetime>().ApplicationStopping);
+                    sp.GetService<IHostApplicationLifetime>().ApplicationStopping);
             });
             services.AddSingleton<IRandomSongProvider>(sp => new RandomSongProviderCombinator(
                 new WeightedRandom<IRandomSongProvider>(
@@ -86,7 +87,7 @@ namespace BillionSongs {
                     }
             ), logger: sp.GetService<ILogger<RandomSongProviderCombinator>>()));
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
 
         static async void CheckGeneratorSanity(ILyricsGenerator lyricsGenerator)
@@ -153,7 +154,7 @@ namespace BillionSongs {
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env) {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
@@ -167,9 +168,11 @@ namespace BillionSongs {
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            app.UseRouting();
+
             app.UseAuthentication();
 
-            app.UseMvc();
+            app.UseEndpoints(endpoints => endpoints.MapRazorPages());
         }
     }
 }
