@@ -7,7 +7,6 @@ namespace BillionSongs {
     using BillionSongs.Data;
 
     using Gradient;
-    using Gradient.Samples.GPT2;
 
     using LostTech.WhichPython;
 
@@ -38,13 +37,6 @@ namespace BillionSongs {
             services.AddMemoryCache(options => {
                 options.SizeLimit = this.Configuration.GetValue<long?>("MemCache:SizeLimit", null);
             });
-
-            ILyricsGenerator lyricsGenerator =
-                this.Configuration.GetValue<string>("Generator", null) == "dummy"
-                ? new DummyLyrics()
-                : this.CreateGradientLyrics();
-            CheckGeneratorSanity(lyricsGenerator);
-            services.AddSingleton(lyricsGenerator);
 
             services.Configure<IdentityOptions>(options => {
                 options.Password.RequiredUniqueChars = 4;
@@ -90,67 +82,12 @@ namespace BillionSongs {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
 
-        static async void CheckGeneratorSanity(ILyricsGenerator lyricsGenerator)
-            => await lyricsGenerator.GenerateLyrics(song: 1362233347, CancellationToken.None)
-                .ConfigureAwait(false);
-
         void ConfigureDbContext(DbContextOptionsBuilder options) {
             string connectionString = this.Configuration.GetConnectionString("DefaultConnection");
             if (this.Configuration.GetValue<string>("DB", MsSql) == MsSql)
                 options.UseSqlServer(connectionString);
             else
                 options.UseSqlite(connectionString);
-        }
-
-        private ILyricsGenerator CreateGradientLyrics() {
-            string condaEnvName = this.Configuration.GetValue<string>("PYTHON_CONDA_ENV_NAME", null);
-            if (!string.IsNullOrEmpty(condaEnvName))
-                GradientSetup.UseCondaEnvironment(condaEnvName);
-
-            var logger = this.LoggerFactory.CreateLogger<Startup>();
-            bool download = this.Configuration.GetValue("Model:Download", defaultValue: true);
-            string gpt2Root = this.Configuration.GetValue("GPT2_ROOT", Environment.CurrentDirectory);
-            string checkpointName = this.Configuration.GetValue("Model:Checkpoint", "latest");
-            string modelName = this.Configuration.GetValue<string>("Model:Type", null)
-                ?? throw new ArgumentNullException("Model:Type");
-
-            string modelRoot = Path.Combine(gpt2Root, "models", modelName);
-            logger.LogInformation($"Using model from {modelRoot}");
-            if (!File.Exists(Path.Combine(modelRoot, "encoder.json"))) {
-                if (download) {
-                    logger.LogInformation($"downloading {modelName} parameters");
-                    ModelDownloader.DownloadModelParameters(gpt2Root, modelName);
-                    logger.LogInformation($"downloaded {modelName} parameters");
-                } else
-                    throw new FileNotFoundException($"Can't find GPT-2 model in " + modelRoot);
-            }
-
-            string runName = this.Configuration.GetValue<string>("Model:Run", null)
-                ?? throw new ArgumentNullException("Model:Run");
-
-            string checkpoint = Gpt2Checkpoints.ProcessCheckpointConfig(gpt2Root, checkpointName, modelName: modelName, runName: runName);
-            logger.LogInformation($"Using model checkpoint: {checkpoint}");
-            if (checkpoint == null || !File.Exists(checkpoint + ".index")) {
-                if (download && checkpointName == "latest") {
-                    logger.LogInformation($"downloading the latest checkpoint for {modelName}, run {runName}");
-                    checkpoint = ModelDownloader.DownloadCheckpoint(
-                        root: gpt2Root,
-                        modelName: modelName,
-                        runName: runName);
-                    logger.LogInformation("download successful");
-                }  else {
-                    if (!download)
-                        logger.LogWarning("Model downloading is disabled. See corresponding appsettings file.");
-                    else if (checkpointName != "latest")
-                        logger.LogWarning("Only the 'latest' model can be downloaded. You wanted: " + checkpointName);
-                    throw new FileNotFoundException("Can't find checkpoint " + checkpoint + ".index");
-                }
-            }
-
-            return new Gpt2LyricsGenerator(
-                gpt2Root: gpt2Root, modelName: modelName, checkpoint: checkpoint,
-                logger: this.LoggerFactory.CreateLogger<Gpt2LyricsGenerator>(),
-                condaEnv: condaEnvName);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

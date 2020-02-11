@@ -13,8 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repo", "Repo", "{3E641DBD-0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BillionSongs", "Web\BillionSongs.csproj", "{6E65B458-03F5-476E-9F8B-C8650D0D866A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GPT-2", "External\Gradient-Samples\GPT-2\GPT-2.csproj", "{EB17448C-FFDE-4AEF-BC03-EFA6634EFBCD}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,10 +23,6 @@ Global
 		{6E65B458-03F5-476E-9F8B-C8650D0D866A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E65B458-03F5-476E-9F8B-C8650D0D866A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E65B458-03F5-476E-9F8B-C8650D0D866A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EB17448C-FFDE-4AEF-BC03-EFA6634EFBCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EB17448C-FFDE-4AEF-BC03-EFA6634EFBCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EB17448C-FFDE-4AEF-BC03-EFA6634EFBCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EB17448C-FFDE-4AEF-BC03-EFA6634EFBCD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

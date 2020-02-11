@@ -13,15 +13,12 @@
     using static System.FormattableString;
 
     public class CachedSongDatabase: ISongDatabase {
-        readonly ILyricsGenerator lyricsGenerator;
         readonly IMemoryCache cache;
         readonly ApplicationDbContext dbContext;
 
         public CachedSongDatabase(
-            [NotNull] ILyricsGenerator lyricsGenerator,
             [NotNull] IMemoryCache cache,
             [NotNull] ApplicationDbContext dbContext) {
-            this.lyricsGenerator = lyricsGenerator ?? throw new ArgumentNullException(nameof(lyricsGenerator));
             this.cache = cache ?? throw new ArgumentNullException(nameof(cache));
             this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
@@ -67,32 +64,13 @@
                 .FindAsync(keyValues: new object[] { songID }, cancellation)
                 .ConfigureAwait(false);
 
-            if (song != null) return song;
-
-            try {
-                string lyrics = await this.lyricsGenerator.GenerateLyrics(songID, cancellation).ConfigureAwait(false);
-                song = new Song {
-                    Generated = DateTimeOffset.UtcNow,
-                    ID = songID,
-                    Lyrics = lyrics,
-                };
-            } catch(LyricsGeneratorException generatorError) {
-                song = new Song {
-                    Generated = DateTimeOffset.UtcNow,
-                    ID = songID,
-                    GeneratorError = generatorError.ToString(),
-                };
-            }
-
-            this.dbContext.Songs.Add(song);
-            try {
-                await this.dbContext.SaveChangesAsync(CancellationToken.None).ConfigureAwait(false);
-            }
-            catch (DbUpdateException) {}
-
-            return song;
+            return song ?? new Song {
+                Generated = DateTimeOffset.UtcNow,
+                ID = songID,
+                GeneratorError = "Generation of new songs is disabled",
+            };
         }
 
-        string GetCacheKey(uint song) => Invariant($"{this.lyricsGenerator.GetType()}{song}");
+        string GetCacheKey(uint song) => Invariant($"{nameof(CachedSongDatabase)}{song}");
     }
 }

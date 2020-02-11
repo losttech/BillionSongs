@@ -16,8 +16,7 @@ using Microsoft.Extensions.Logging;
 public class PregeneratedSongProvider: IRandomSongProvider {
     readonly ConcurrentQueue<PregeneratedSong> pregenerated = new ConcurrentQueue<PregeneratedSong>();
     readonly int desiredPoolSize = 50000;
-    readonly int reuseLimit = 10;
-    readonly TrulyRandomSongProvider randomProvider = new TrulyRandomSongProvider();
+    readonly int reuseLimit = 3;
     readonly TimeSpan emptyDelayInterval = TimeSpan.FromSeconds(1);
     readonly TimeSpan fullDelayInterval = TimeSpan.FromMinutes(1);
     readonly ISongDatabase songDatabase;
@@ -68,22 +67,13 @@ public class PregeneratedSongProvider: IRandomSongProvider {
                 continue;
             }
 
-            uint id = this.randomProvider.GetRandomSongID();
-            try {
-                Song song = await this.songDatabase.GetSong(id, cancellation).ConfigureAwait(false);
-                if (song.GeneratorError == null) {
-                    this.pregenerated.Enqueue(new PregeneratedSong {
-                        id = id,
-                        usesLeft = this.reuseLimit,
-                    });
-
-                    int tenPercent = this.desiredPoolSize / 10;
-                    if (this.pregenerated.Count % tenPercent == 0)
-                        this.logger.LogDebug($"pregen queue: {this.pregenerated.Count * 100 / tenPercent}%");
-                }
-            }
-            catch (LyricsGeneratorException) { }
-            catch (OperationCanceledException) { }
+            fromDatabase = fromDatabase.Select(song => new PregeneratedSong {
+                id = song.id,
+                usesLeft = this.reuseLimit,
+            }).ToList();
+            Shuffle(fromDatabase);
+            foreach (PregeneratedSong song in fromDatabase)
+                this.pregenerated.Enqueue(song);
         }
     }
 
