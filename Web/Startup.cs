@@ -6,10 +6,6 @@ namespace BillionSongs {
     using System.Threading;
     using BillionSongs.Data;
 
-    using Gradient;
-
-    using LostTech.WhichPython;
-
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
