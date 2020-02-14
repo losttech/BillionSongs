@@ -11,9 +11,7 @@
     using Microsoft.Extensions.Configuration;
     public class RunWebServerCommand: ConsoleCommand {
         public static int Main(string[] args) {
-            return ConsoleCommandDispatcher.DispatchCommand(
-                ConsoleCommandDispatcher.FindCommandsInSameAssemblyAs(typeof(RunWebServerCommand)),
-                args, consoleOut: Console.Error);
+            return new RunWebServerCommand().Run(args);
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) {
@@ -29,8 +27,6 @@
                 .UseConfiguration(configuration)
                 .UseStartup<Startup>();
         }
-
-        public string Generator { get; set; }
 
         public RunWebServerCommand() {
             this.IsCommand("web");
