@@ -1,6 +1,6 @@
 # Billion Songs, AI-powered song lyrics generator
 
-[Generate a song](http://billion.dev.losttech.software:2095/)
+[Generate a song](https://billionsongs.azurewebsites.net/)
 
 > NOTE: this repository has git submodules. So clone with --recurse-submodules.
 > Learn about them [here](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
