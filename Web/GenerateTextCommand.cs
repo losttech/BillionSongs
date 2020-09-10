@@ -1,13 +1,9 @@
 ﻿namespace BillionSongs {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.IO;
     using System.Linq;
     using System.Text;
-    using System.Threading.Tasks;
-    using Gradient;
-    using LostTech.WhichPython;
+    using LostTech.Gradient;
     using ManyConsole.CommandLineUtils;
 
     public class GenerateTextCommand: ConsoleCommand {

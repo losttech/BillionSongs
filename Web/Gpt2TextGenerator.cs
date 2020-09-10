@@ -3,11 +3,10 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using Gradient.Samples.GPT2;
+    using LostTech.Gradient.Samples.GPT2;
     using JetBrains.Annotations;
     using numpy;
     using Python.Runtime;
-    using SharPy.Runtime;
     using tensorflow;
     using tensorflow.train;
 
@@ -64,7 +63,7 @@
 
                     var result = new StringBuilder(this.sampleLength);
                     while (result.Length < this.sampleLength) {
-                        var @out = session.run(sampleOp, feed_dict: new PythonDict<object, object> {
+                        var @out = session.run(sampleOp, feed_dict: new Dictionary<object, object> {
                             [contextPlaceholder] = new[] { this.endOfText },
                         });
                         string chunk = this.encoder.Decode((ndarray<int>)@out[0]);

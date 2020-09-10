@@ -6,10 +6,9 @@ namespace BillionSongs {
     using System.Threading;
     using BillionSongs.Data;
 
-    using Gradient;
-    using Gradient.Samples.GPT2;
-
-    using LostTech.WhichPython;
+    using LostTech.Gradient;
+    using LostTech.Gradient.Samples.GPT2;
+    using LostTech.TensorFlow;
 
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -91,7 +90,7 @@ namespace BillionSongs {
         }
 
         static async void CheckGeneratorSanity(ILyricsGenerator lyricsGenerator)
-            => await lyricsGenerator.GenerateLyrics(song: 1362233347, CancellationToken.None)
+            => await lyricsGenerator.GenerateLyrics(song: 1362233343, CancellationToken.None)
                 .ConfigureAwait(false);
 
         void ConfigureDbContext(DbContextOptionsBuilder options) {
@@ -106,6 +105,8 @@ namespace BillionSongs {
             string condaEnvName = this.Configuration.GetValue<string>("PYTHON_CONDA_ENV_NAME", null);
             if (!string.IsNullOrEmpty(condaEnvName))
                 GradientEngine.UseCondaEnvironment(condaEnvName);
+
+            TensorFlowSetup.Instance.EnsureInitialized();
 
             var logger = this.LoggerFactory.CreateLogger<Startup>();
             bool download = this.Configuration.GetValue("Model:Download", defaultValue: true);
