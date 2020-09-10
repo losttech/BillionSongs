@@ -14,35 +14,56 @@
                 Console.Error.WriteLine("must specify files to convert");
                 return -1;
             }
-            foreach(string filePath in remainingArguments) {
+            var files = remainingArguments.SelectMany(EnumerateFilesFromPathSpec);
+            foreach(string filePath in files) {
                 string target = Path.ChangeExtension(filePath, Path.GetExtension(filePath) + ".txt");
                 this.Convert(filePath, target);
             }
             return 0;
         }
 
+        static readonly char[] fileMaskCharacters = new[] { '*', '?' };
+        static IEnumerable<string> EnumerateFilesFromPathSpec(string pathSpec) {
+            if (pathSpec.IndexOfAny(fileMaskCharacters) == 0) {
+                yield return pathSpec;
+                yield break;
+            }
+
+            string nameMask = Path.GetFileName(pathSpec);
+            string directory = Path.GetDirectoryName(pathSpec) ?? ".";
+            if (directory.IndexOfAny(fileMaskCharacters) >= 0)
+                throw new ArgumentException("The following characters can only be present in file name spec: "
+                    + string.Join("", fileMaskCharacters));
+            foreach (string entry in Directory.EnumerateFiles(directory, searchPattern: nameMask))
+                yield return entry;
+        }
+
         void Convert(string filePath, string target) {
             Console.WriteLine($"{filePath} -> {target}");
-            using(var input = File.OpenRead(filePath)) {
-                var midi = MidiSequence.Open(input);
-                string[] lyrics = midi.SelectMany(track => track.Events)
-                    .OfType<BaseTextMetaMidiEvent>()
-                    .GroupBy(evt => evt.GetType())
-                    .Select(e => e.Key.Name + "\n" + string.Join(" ",
-                        e.Select(evt => $"{evt.Text.Trim(' ', '\t')}@{evt.DeltaTime}")))
-                    .ToArray();
+            try {
+                using (var input = File.OpenRead(filePath)) {
+                    var midi = MidiSequence.Open(input);
+                    string[] lyrics = midi.SelectMany(track => track.Events)
+                        .OfType<BaseTextMetaMidiEvent>()
+                        .GroupBy(evt => evt.GetType())
+                        .Select(e => e.Key.Name + "\n" + string.Join(" ",
+                            e.Select(evt => $"{evt.Text.Trim(' ', '\t')}@{evt.DeltaTime}")))
+                        .ToArray();
 
-                if (lyrics.Length == 0)
-                    Console.WriteLine("(no lyrics found)");
-                else
-                    foreach (var kind in lyrics)
-                        Console.WriteLine(kind);
+                    if (lyrics.Length == 0)
+                        Console.WriteLine("(no lyrics found)");
+                    else
+                        foreach (var kind in lyrics)
+                            Console.WriteLine(kind);
 
-                Console.WriteLine();
-                var list = midi.Tracks.SelectMany(track => track.Events).Select(evt => evt.GetType()).Distinct();
-                foreach (var entry in list) {
-                    Console.WriteLine(entry.ToString());
+                    Console.WriteLine();
+                    var list = midi.Tracks.SelectMany(track => track.Events).Select(evt => evt.GetType()).Distinct();
+                    foreach (var entry in list) {
+                        Console.WriteLine(entry.ToString());
+                    }
                 }
+            } catch (MidiParser.Mid) {
+
             }
         }
 
