@@ -3,7 +3,7 @@ namespace BillionSongs {
     using System.IO;
     using System.IO.Compression;
     using System.Net;
-    using Gradient.Samples.GPT2;
+    using LostTech.Gradient.Samples.GPT2;
     using JetBrains.Annotations;
 
     public static class ModelDownloader
