@@ -43,14 +43,21 @@ Detailed explanation in a [blog post](https://habr.com/post/453232/)
 
 # Run instructions
 
-1. After cloning the repository, enter the `Web` folder and run `dotnet ef database update`.
+1. Clone the repository and enter the `Web` folder
+2. .NET Core 3+ only: ensure you have Entity Framework tool installed:
+`dotnet tool install --global dotnet-ef`
+3. After cloning the repository, enter the `Web` folder and run `dotnet ef database update`.
 That should create `songs.db` file in the same directory.
-2. Edit `appsettings.json` (see `appsettings.Development.json` for an example):
+4. Edit `appsettings.json` (see `appsettings.Development.json` for an example):
     - add `"DB": "sqlite"`
     - modify `DefaultConnection` to `"DefaultConnection": "Data Source=songs.db"`
-3. Run `dotnet run web`. This should print some logs.
+    - ensure that `Generator` is **not** `dummy`, if you want lyrics to actually be generated
+5. Run `dotnet run web`. This should print some logs.
 Wait for `Now listening on: http://`, then open that URL in the browser.
 It will take up to 4 minutes to generate the first song.
+
+> NOTE: if you see "Can't choose between the following Python environments, as they are equally matching",
+set `PYTHON_CONDA_ENV_NAME` to the name of Conda environment where you installed TensorFlow and `regex` modules.
 
 
 # Train instructions
