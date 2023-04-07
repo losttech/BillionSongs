@@ -6,7 +6,7 @@
 > Learn about them [here](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
 
 See the blog post
-[Writing billion songs with C# and Deep Learning](https://habr.com/post/453232/)
+[Writing billion songs with C# and Deep Learning](https://lostmsu.github.io/BillionSongs/)
 for a detailed explanation how it works.
 
 This project mainly serves as a demonstration of
@@ -32,7 +32,7 @@ There is also [PregeneratedSongProvider](Web/PregeneratedSongProvider.cs),
 which continuously creates new texts in the background to ensure clicking 
 "Make Random" button gives an instant result.
 
-Detailed explanation in a [blog post](https://habr.com/post/453232/)
+Detailed explanation in a [blog post](https://lostmsu.github.io/BillionSongs/)
 
 # Prerequisites
 
